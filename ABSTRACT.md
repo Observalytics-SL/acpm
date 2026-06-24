@@ -3,8 +3,8 @@
 **Standard:** SC-014 · **Full name:** Agent Capability and Profile Model
 **Acronym:** ACPM · **Version:** 1.0.0 · **Status:** Proposed
 **License:** CC BY 4.0 · **Date:** June 2026
-**Repository:** https://github.com/Observalytics-SL/Frameworks/tree/main/SC-014-agent-capability-profile-model
-**Schema:** https://schemacommons.org/SC-014/profile.schema.json
+**Repository:** https://github.com/Observalytics-SL/acpm
+**Schema:** https://raw.githubusercontent.com/Observalytics-SL/acpm/main/schema/profile.schema.json
 **Namespace:** https://schemacommons.org/SC-014/vocab#
 
 ---
@@ -71,7 +71,7 @@ AI agents · capability profile · trust and attestation · cost comparison · S
   month     = {June},
   type      = {Proposed Standard},
   institution = {Schema Commons},
-  url       = {https://schemacommons.org/SC-014/},
+  url       = {https://github.com/Observalytics-SL/acpm},
   note      = {CC BY 4.0. Schema: profile.schema.json (sc_version 1.0.0)}
 }
 ```

@@ -1,0 +1,873 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rfc [
+  <!ENTITY nbsp    "&#160;">
+]>
+<rfc xmlns:xi="http://www.w3.org/2001/XInclude"
+     category="info"
+     docName="draft-schemacommons-acpm-00"
+     ipr="trust200902"
+     submissionType="independent"
+     xml:lang="en"
+     version="3">
+
+  <front>
+    <title abbrev="ACPM">Agent Capability and Profile Model (ACPM)</title>
+    <seriesInfo name="Internet-Draft" value="draft-schemacommons-acpm-00"/>
+
+    <author initials="B." surname="van Bussel" fullname="Bob van Bussel">
+      <organization>Observalytics SL</organization>
+      <address>
+        <email>bob@observalytics.com</email>
+        <uri>https://github.com/Observalytics-SL</uri>
+      </address>
+    </author>
+
+    <date year="2026" month="June"/>
+    <area>ART</area>
+
+    <keyword>AI agents</keyword>
+    <keyword>capability profile</keyword>
+    <keyword>trust and attestation</keyword>
+    <keyword>cost comparison</keyword>
+    <keyword>service level agreement</keyword>
+    <keyword>interoperability</keyword>
+    <keyword>JSON Schema</keyword>
+
+    <abstract>
+      <t>
+        The Agent Capability and Profile Model (ACPM) is an open, vendor-neutral
+        specification for describing what an artificial intelligence (AI) agent,
+        the platform that runs it, a tool it calls, or the underlying large
+        language model (LLM) actually offers, independent of how that subject is
+        run or discovered.  An ACPM document, called a capability profile,
+        declares a subject's identity, a dot-namespaced list of supported
+        capabilities together with a support level, an inventory of tool
+        protocols, models, and memory backends, a trust and attestation posture,
+        a cost structure, service-level commitments, structured delegation rules
+        governing inbound and outbound work handoff, and a compliance posture.
+      </t>
+      <t>
+        ACPM profiles are designed to cross-reference agent definitions and
+        registry entries defined by other Schema Commons standards, and to be
+        consumed by registries, marketplaces, and orchestrators that need to
+        compare capabilities, gate on trust, and reason about cost and service
+        levels without bespoke per-vendor parsing.  This document describes the
+        ACPM data model, field semantics, conformance levels, and the
+        relationship of ACPM's trust and signature fields to actual
+        verification, which ACPM deliberately does not itself perform.
+      </t>
+    </abstract>
+  </front>
+
+  <middle>
+
+    <!-- ============================================================ -->
+    <section anchor="introduction" numbered="true" toc="default">
+      <name>Introduction</name>
+      <t>
+        As of mid-2026, the AI agent ecosystem has converged on two adjacent
+        but distinct interoperability problems.  The first is how to express a
+        portable, runnable agent definition so that an agent built on one
+        runtime can be executed on another; this is the problem the
+        Autonomous Agent Interchange Format (AAIF) addresses.  The second is
+        how to discover an agent within a registry or marketplace; this is the
+        problem an Agent Registry Protocol addresses.  Neither problem
+        encompasses a third, equally common need: describing, comparing, and
+        reasoning about what an agent, the platform running it, the tools it
+        calls, or the underlying model actually offers.
+      </t>
+      <t>
+        Today this information is scattered across marketing pages, ad hoc
+        vendor-specific JSON, ASCII tables in README files, and human-readable
+        documentation that changes shape from vendor to vendor.  There is no
+        canonical way to ask, in a machine-checkable way, whether a given
+        subject supports a particular capability and at what fidelity, what
+        evidence backs a trust claim about that subject, what it costs to use,
+        what service level applies, or under what conditions it may delegate
+        work to, or accept delegated work from, another subject.  Registries
+        and orchestrators that need this information today either write
+        bespoke parsers per vendor or forgo capability, trust, and cost
+        comparison entirely.
+      </t>
+      <t>
+        This document specifies the Agent Capability and Profile Model (ACPM),
+        a portable, vendor-neutral format for a capability profile: a
+        standalone description of what a subject offers.  ACPM is deliberately
+        scoped to be orthogonal to, and composable with, both the runnable
+        agent definition problem and the registry discovery problem; it does
+        not replace either.
+      </t>
+
+      <section anchor="requirements-language" numbered="true" toc="default">
+        <name>Requirements Language</name>
+        <t>
+          The key words "<bcp14>MUST</bcp14>", "<bcp14>MUST NOT</bcp14>",
+          "<bcp14>REQUIRED</bcp14>", "<bcp14>SHALL</bcp14>",
+          "<bcp14>SHALL NOT</bcp14>", "<bcp14>SHOULD</bcp14>",
+          "<bcp14>SHOULD NOT</bcp14>", "<bcp14>RECOMMENDED</bcp14>",
+          "<bcp14>NOT RECOMMENDED</bcp14>", "<bcp14>MAY</bcp14>", and
+          "<bcp14>OPTIONAL</bcp14>" in this document are to be interpreted as
+          described in BCP 14 <xref target="RFC2119"/> <xref target="RFC8174"/>
+          when, and only when, they appear in all capitals, as shown here.
+        </t>
+      </section>
+
+      <section anchor="scope" numbered="true" toc="default">
+        <name>Scope</name>
+        <t>
+          ACPM is in scope for: subject identity (agent, platform, tool, or
+          model); declared capability support levels using a dot-namespaced
+          vocabulary; tool-invocation protocol, model, and memory-backend
+          inventories; trust level and attestation evidence; sandboxing
+          characteristics; pricing model and unit cost; service-level
+          commitments; structured rules governing delegation of work between
+          profiled subjects; compliance posture (data residency,
+          certifications, personally identifiable information handling); and
+          profile provenance.
+        </t>
+        <t>
+          ACPM is out of scope for: the execution loop of the profiled subject;
+          registry listing and discovery mechanics; and cryptographic
+          enforcement or verification of any claim a profile makes.  ACPM
+          specifies the shape of a trust or signature claim; verifying that
+          claim is the responsibility of the system consuming the profile.
+        </t>
+      </section>
+    </section>
+
+    <!-- ============================================================ -->
+    <section anchor="terminology" numbered="true" toc="default">
+      <name>Terminology</name>
+      <dl newline="false" spacing="normal">
+        <dt>ACPM document / profile</dt>
+        <dd>
+          A JSON instance conforming to the ACPM profile schema.
+        </dd>
+        <dt>Subject</dt>
+        <dd>
+          The agent, platform, tool, or model that a profile describes.
+        </dd>
+        <dt>Capability</dt>
+        <dd>
+          A dot-namespaced runtime feature string a subject may offer, paired
+          with a declared support level.
+        </dd>
+        <dt>Producer</dt>
+        <dd>
+          Software or a person that publishes an ACPM profile.
+        </dd>
+        <dt>Consumer</dt>
+        <dd>
+          Software that reads an ACPM profile to make a capability-matching,
+          trust-gating, cost, or service-level decision.
+        </dd>
+        <dt>Conformance level</dt>
+        <dd>
+          One of the five cumulative conformance levels defined in
+          <xref target="conformance"/> that a profile satisfies.
+        </dd>
+        <dt>Condition</dt>
+        <dd>
+          The structured-or-string gating type used in delegation rules,
+          reused without modification from the Autonomous Agent Interchange
+          Format.  See <xref target="conditions"/>.
+        </dd>
+      </dl>
+    </section>
+
+    <!-- ============================================================ -->
+    <section anchor="design-principles" numbered="true" toc="default">
+      <name>Design Principles</name>
+      <t>ACPM is built on six design principles:</t>
+      <ol spacing="normal" type="1">
+        <li>
+          <strong>Claims, not contracts.</strong>  A profile states what the
+          subject claims to offer.  ACPM does not itself verify any claim; a
+          Consumer that requires assurance <bcp14>MUST</bcp14> perform its own
+          verification.
+        </li>
+        <li>
+          <strong>Vocabulary-compatible with AAIF.</strong>  Capability
+          identifiers <bcp14>SHOULD</bcp14> use the same dot-namespaced strings
+          as the Autonomous Agent Interchange Format's required-capability
+          vocabulary, so an agent's declared needs and a profile's declared
+          offerings can be compared directly.
+        </li>
+        <li>
+          <strong>Composable, not coupled.</strong>  ACPM cross-references
+          agent definitions and registry entries by identifier reference; it
+          does not import or extend their schemas, so each specification can
+          evolve independently.
+        </li>
+        <li>
+          <strong>Comparable by construction.</strong>  Every offer-side
+          concept — capability support, trust level, cost, service level —
+          uses a closed, ordered, or structured vocabulary rather than free
+          text, so two profiles can be diffed or ranked mechanically.
+        </li>
+        <li>
+          <strong>Strict by default, extensible at the edges.</strong>  Every
+          object disallows additional properties, with a reserved
+          extension-key namespace at the document root for forward
+          compatibility and vendor metadata.
+        </li>
+        <li>
+          <strong>Honest about enforceability.</strong>  Fields describing
+          trust, attestation, and signature are explicitly documented as
+          advisory unless a Consumer independently verifies them.  This
+          specification does not imply a cryptographic guarantee it does not
+          provide.
+        </li>
+      </ol>
+    </section>
+
+    <!-- ============================================================ -->
+    <section anchor="document-structure" numbered="true" toc="default">
+      <name>ACPM Document Structure</name>
+      <t>
+        An ACPM profile is a JSON object validated against the ACPM profile
+        schema (JSON Schema draft 2020-12 <xref target="JSON-SCHEMA"/>).  The
+        minimum conformant document requires only two top-level fields:
+      </t>
+      <artwork name="" type="" align="left" alt=""><![CDATA[
+{
+  "sc_standard": "SC-014",
+  "subject": { "subject_type": "agent", "name": "Example Agent" }
+}
+]]></artwork>
+
+      <t>
+        The full object model is organised as follows:
+      </t>
+
+      <artwork name="" type="" align="left" alt=""><![CDATA[
+CapabilityProfile (root)
+  sc_standard       "SC-014"  (required)
+  sc_version        string (semver, default "1.0.0")
+  profile_id        string (UUID)
+  subject           (required)
+    subject_type    agent | platform | tool | model
+    name / vendor / version / homepage
+    sc_refs[]       cross-references to other Schema Commons documents
+  capabilities[]    id / support / version_constraint / notes
+  tools[]           protocol / max_concurrent_calls / auth_methods[]
+  models[]          provider / model_id / context_window / modalities[]
+  memory[]          backend / scopes[]
+  trust
+    level           untrusted | sandboxed | verified | attested | enterprise
+    attestation      issuer / method / evidence_url / issued_at / expires_at
+    sandbox          isolation / network_egress
+  cost_profile
+    pricing_model    free | usage_based | subscription | tiered | custom
+    currency / unit_cost / free_tier
+  sla
+    uptime_pct / p50_latency_ms / p99_latency_ms
+    support_tier / incident_response
+  delegation_rules[]
+    direction / target / condition / action
+  compliance
+    data_residency[] / certifications[] / pii_handling
+  provenance
+    authored_by / created_at / updated_at / license / signature
+]]></artwork>
+
+      <section anchor="subject-fields" numbered="true" toc="default">
+        <name>Subject Identity</name>
+        <t>
+          The subject.subject_type field <bcp14>MUST</bcp14> be one of "agent",
+          "platform", "tool", or "model", and the subject.name field
+          <bcp14>MUST</bcp14> be present.  The subject.sc_refs array carries
+          structured cross-references, each an object with a "standard" field
+          (a Schema Commons standard code such as "SC-006") and an "id" field
+          (an identifier within that standard's own document, such as an AAIF
+          agent_id or an Agent Registry Protocol entry identifier).  These
+          references are advisory pointers; ACPM does not require the
+          referenced document to exist or be reachable.
+        </t>
+      </section>
+
+      <section anchor="capabilities-section" numbered="true" toc="default">
+        <name>Capabilities</name>
+        <t>
+          Each entry in the capabilities array declares a dot-namespaced
+          capability identifier and a support level.  The identifier
+          <bcp14>SHOULD</bcp14> reuse the vocabulary already established by
+          the Autonomous Agent Interchange Format's required-capability field
+          (for example, "tool.mcp", "memory.vector", "orchestration.parallel")
+          where the underlying concept overlaps, and <bcp14>MAY</bcp14> extend
+          it with new namespaces such as "vision.*", "audio.*", "reasoning.*",
+          "auth.*", or "state.*" for concepts AAIF does not enumerate.
+        </t>
+        <t>
+          The support field <bcp14>MUST</bcp14> be one of four values:
+          "native" (first-class, fully supported), "emulated" (achieved
+          through a workaround or composition of other features), "partial"
+          (supported with material limitations that <bcp14>SHOULD</bcp14> be
+          documented in the notes field), or "none" (explicitly absent).
+          Declaring "none" explicitly, rather than omitting the capability
+          entirely, allows a Consumer to distinguish "known not supported"
+          from "not yet assessed."
+        </t>
+      </section>
+
+      <section anchor="inventories" numbered="true" toc="default">
+        <name>Tool, Model, and Memory Inventories</name>
+        <t>
+          The tools array enumerates supported tool-invocation protocols
+          drawn from the same four-protocol vocabulary as the Autonomous
+          Agent Interchange Format: function, MCP <xref target="MCP"/>, HTTP,
+          and OpenAPI.  Each entry <bcp14>MAY</bcp14> declare a concurrency
+          ceiling and a list of supported authentication methods.
+        </t>
+        <t>
+          The models array enumerates LLMs the subject exposes or routes to
+          (or, when subject_type is "model", describes itself), with
+          provider, model identifier, context window, maximum output tokens,
+          and supported modalities (text, image, audio, video, tool_use).
+        </t>
+        <t>
+          The memory array enumerates supported storage backends and, for
+          each, the memory scopes available on it, using the same backend
+          and scope vocabularies as the Autonomous Agent Interchange Format's
+          memory configuration.
+        </t>
+      </section>
+
+      <section anchor="trust-section" numbered="true" toc="default">
+        <name>Trust and Attestation</name>
+        <t>
+          The trust.level field is an ordered, five-tier claim: "untrusted"
+          (no claim verified), "sandboxed" (executes under some isolation
+          boundary but claims are otherwise unverified), "verified" (claims
+          checked, even if only by self-certification), "attested" (a named
+          issuer has produced a dated, linkable attestation), and "enterprise"
+          (attested, with organisational accountability typically evidenced
+          by populated service-level and compliance fields).
+        </t>
+        <t>
+          A profile <bcp14>MAY</bcp14> declare any trust level without
+          external verification; this specification places no technical
+          control in front of an inflated claim.  A Consumer that gates a
+          decision on trust.level <bcp14>SHOULD</bcp14> check
+          trust.attestation.evidence_url and <bcp14>SHOULD</bcp14> verify that
+          trust.attestation.expires_at, if present, has not passed before
+          relying on an "attested" or "enterprise" claim.  See
+          <xref target="security"/>.
+        </t>
+        <t>
+          The trust.sandbox object describes the isolation boundary the
+          subject executes within (none, process, container, or virtual
+          machine) and its network egress policy (none, allowlist, or full).
+          This describes isolation the subject runs under, not isolation
+          a Consumer receives when calling the subject remotely; transport
+          security remains the Consumer's own responsibility.
+        </t>
+      </section>
+
+      <section anchor="cost-sla-section" numbered="true" toc="default">
+        <name>Cost Profile and Service Level</name>
+        <t>
+          The cost_profile object declares a pricing model (free,
+          usage_based, subscription, tiered, or custom), a currency, a single
+          unit cost (a billing dimension — request, 1000 tokens, minute, or
+          run — paired with an amount), and an optional free tier (included
+          units per day or month).  A subject with pricing across multiple
+          dimensions <bcp14>SHOULD</bcp14> publish the most comparable
+          dimension, or publish one profile per pricing tier.
+        </t>
+        <t>
+          The sla object declares uptime percentage, p50 and p99 latency in
+          milliseconds, a support tier (community, standard, premium, or
+          enterprise), and an incident-response commitment for Severity 1
+          incidents.  These figures <bcp14>MAY</bcp14> represent either
+          contractual commitments or observed historical performance; this
+          version of ACPM does not yet distinguish the two, which is a known
+          limitation.
+        </t>
+      </section>
+
+      <section anchor="delegation-section" numbered="true" toc="default">
+        <name>Delegation Rules</name>
+        <t>
+          The delegation_rules array governs whether the subject may hand
+          work to ("outbound") or accept work from ("inbound") another
+          profiled subject.  Each rule <bcp14>MAY</bcp14> scope itself to a
+          specific counterparty profile, a specific capability, a minimum
+          counterparty trust level, and an additional Condition (see
+          <xref target="conditions"/>), and <bcp14>MUST</bcp14> declare an
+          action: "allow", "deny", or "require_approval".  At least one of
+          the target fields <bcp14>SHOULD</bcp14> be present per rule, though
+          this is authoring guidance rather than a structural requirement, so
+          that intentionally broad direction-only rules remain expressible.
+        </t>
+        <t>
+          When a rule's action is "require_approval", a Consumer
+          <bcp14>MUST</bcp14> obtain explicit approval before proceeding with
+          the delegated work; treating "require_approval" as equivalent to
+          "allow" is a conformance violation.
+        </t>
+      </section>
+
+      <section anchor="compliance-section" numbered="true" toc="default">
+        <name>Compliance</name>
+        <t>
+          The compliance object declares data residency regions (EU, US, UK,
+          APAC, or custom), a free-form list of held certifications, and a
+          PII-handling mode (none, redact, encrypt, or forbidden).
+        </t>
+      </section>
+    </section>
+
+    <!-- ============================================================ -->
+    <section anchor="conditions" numbered="true" toc="default">
+      <name>Condition Expressions</name>
+      <t>
+        The delegation_rules[].condition field accepts a Condition value,
+        reused without modification from the Autonomous Agent Interchange
+        Format.  The structured form (RECOMMENDED) is an object naming an
+        expression language and an expression:
+      </t>
+      <artwork name="" type="" align="left" alt=""><![CDATA[
+{ "lang": "cel", "expr": "request.network_egress != 'full'" }
+]]></artwork>
+      <t>
+        Supported languages are jsonpath, jmespath, cel (Common Expression
+        Language), jsonlogic, always (constant true), and never (constant
+        false).  A bare string is also accepted as a non-deterministic,
+        natural-language hint and <bcp14>MUST NOT</bcp14> be relied upon for
+        portable, reproducible gating.
+      </t>
+      <t>
+        A Consumer that supports a declared lang <bcp14>MUST</bcp14> evaluate
+        the structured form deterministically.  A Consumer that does not
+        support a declared lang <bcp14>MUST</bcp14> treat the rule as
+        unsatisfiable-unknown and apply a conservative default — deny for an
+        outbound rule, reject for an inbound rule — rather than silently
+        treating it as satisfied.
+      </t>
+    </section>
+
+    <!-- ============================================================ -->
+    <section anchor="conformance" numbered="true" toc="default">
+      <name>Conformance Levels</name>
+      <t>
+        ACPM defines five cumulative conformance levels.  As with the
+        Autonomous Agent Interchange Format, conformance is self-certified;
+        there is no central certifying authority.
+      </t>
+      <table align="center">
+        <thead>
+          <tr>
+            <th align="left">Level</th>
+            <th align="left">Requirements</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Basic</td>
+            <td>Validates against the profile schema; subject present.</td>
+          </tr>
+          <tr>
+            <td>Tooled</td>
+            <td>Basic + capabilities array non-empty.</td>
+          </tr>
+          <tr>
+            <td>Trusted</td>
+            <td>Tooled + trust.level is verified, attested, or enterprise.</td>
+          </tr>
+          <tr>
+            <td>Priced</td>
+            <td>Trusted + cost_profile present.</td>
+          </tr>
+          <tr>
+            <td>Enterprise</td>
+            <td>Priced + sla present + compliance present + provenance.signature present.</td>
+          </tr>
+        </tbody>
+      </table>
+      <t>
+        A profile claiming a given level satisfies every predicate of all
+        lower levels as well.  At the time of writing, ACPM does not yet have
+        a machine-readable conformance report schema or public test corpus
+        comparable to those defined for the Autonomous Agent Interchange
+        Format; level claims are presently verified by inspection against
+        this table rather than by an automated suite.
+      </t>
+    </section>
+
+    <!-- ============================================================ -->
+    <section anchor="relationship-prior-art" numbered="true" toc="default">
+      <name>Related Work and Mapping to Prior Art</name>
+      <t>
+        ACPM's overall design intent parallels the Open Cybersecurity Schema
+        Framework: one canonical schema so that disparate parties describe
+        the same kind of thing — there, security events; here, agent
+        capabilities, trust, cost, and service level — in a comparable way.
+      </t>
+      <t>
+        Three further efforts overlap with ACPM closely enough to warrant
+        explicit discussion rather than a one-line table entry. The first is
+        <xref target="HACP"/> ("HACP: A Capability-Contract Protocol for AI
+        Agents and Edge Hardware"), an active IETF individual submission
+        defining a JSON-RPC 2.0 protocol through which an LLM agent
+        discovers, plans, executes, observes, and audits operations against
+        physical edge hardware (GPIO, I2C, UART, sensors) via a
+        security-checked daemon.  Its servers register an immutable tool set
+        at startup, each tool carrying a risk level from zero to three, and a
+        session is capped at a configured maximum risk level that it
+        <bcp14>MUST NOT</bcp14> exceed when executing a tool.  This is the
+        same underlying idea ACPM generalizes — declare what a subject can
+        do, and at what risk or trust tier, before a consumer relies on it —
+        but HACP is narrowly scoped to hardware control, statically declared
+        with no dynamic capability negotiation, and organized around risk
+        tiers rather than ACPM's combination of trust, cost, service level,
+        and delegation.  HACP is cited here as a narrow, complementary
+        precedent for capability-contract thinking, not as a competing
+        general-purpose effort.
+      </t>
+      <t>
+        The second is a still-forming discovery-metadata effort within the
+        Model Context Protocol itself.  The MCP development roadmap
+        <xref target="MCP-ROADMAP"/>, as published 2026-03-05, lists under
+        "Transport Evolution and Scalability" a planned "MCP Server Cards"
+        standard: structured server metadata exposed via a well-known URL so
+        that browsers, crawlers, and registries can discover a server's
+        capabilities without connecting to it, attributed to a "Server Card
+        WG" coordinating with what the roadmap calls "the broader industry
+        AI-catalog effort."  This is directly adjacent to an ACPM profile
+        with subject_type "platform" or "tool": both are machine-readable,
+        well-known-style capability and metadata documents intended for
+        discovery without a live connection.  The relevant framing is
+        superset and instance, not competition: MCP Server Cards are scoped
+        specifically to MCP servers, while ACPM is protocol-agnostic, spans
+        agent, platform, tool, and model subjects, and additionally
+        expresses cost, service level, trust, and delegation that a server
+        card is not designed to carry.  An ACPM profile of subject_type
+        "tool" describing an MCP server <bcp14>SHOULD</bcp14> be designed so
+        that its capability- and protocol-relevant fields are exportable as,
+        or trivially mappable to, a future MCP Server Card.  Because the
+        Server Card WG appears to have only just been chartered as of the
+        cited roadmap snapshot, this mapping is necessarily provisional; see
+        PUBLISHING.md Section 0 for the re-check required before any
+        concrete compatibility claim is finalized.
+      </t>
+      <t>
+        The third is the Agent Bill of Materials (AgBOM) concept referenced
+        by the OWASP Agent Observability Standard (AOS) project
+        <xref target="OWASP-AOS"/>, which proposes inventorying what an
+        agent or system is built from — models, tools, dependencies — using
+        existing software-supply-chain formats such as CycloneDX, SPDX, and
+        SWID.  AgBOM overlaps with ACPM's subject, tools, and models
+        inventory fields, but its center of gravity differs: AgBOM concerns
+        supply-chain provenance and inventory (what is inside a subject, for
+        vulnerability and license tracking), while ACPM concerns runtime
+        capability, trust, cost, and service-level declaration (what a
+        subject can do, and on what trust and cost terms it can be relied
+        upon).  The two are complementary; a profile's subject.sc_refs array
+        <bcp14>MAY</bcp14> point at a companion AgBOM document for
+        supply-chain detail ACPM itself does not capture.
+      </t>
+      <t>
+        No effort found during this review combines capability support
+        level, trust and attestation, cost, service level, and delegation
+        rules into a single vendor-neutral document spanning agent,
+        platform, tool, and model subjects the way ACPM does.  The closest
+        individual pieces — HACP's risk tiers, MCP Server Cards' discovery
+        metadata, and AgBOM's inventory model — each cover one facet of this
+        narrowly and within a single domain.  What is new in ACPM is the
+        combination and its cross-domain generality, not any single
+        constituent idea in isolation.
+      </t>
+      <table align="center">
+        <name>Domain-Adjacent Efforts (Informative)</name>
+        <thead>
+          <tr>
+            <th align="left">Effort</th>
+            <th align="left">Scope</th>
+            <th align="left">Overlap with ACPM</th>
+            <th align="left">Relationship</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>HACP (draft-sunyi-hacp-protocol-00)</td>
+            <td>JSON-RPC capability-contract protocol for LLM agents controlling physical edge hardware, with static per-session risk-level caps (0-3).</td>
+            <td>Capability declaration plus trust/risk-tier gating, similar in spirit to capabilities[] and trust.level.</td>
+            <td>Narrow, complementary precedent; hardware-only, no cost/SLA/delegation model.</td>
+          </tr>
+          <tr>
+            <td>MCP Server Cards (planned, MCP roadmap, 2026-03-05)</td>
+            <td>Well-known-hosted structured metadata for MCP servers, for discovery without connecting; owned by a newly forming Server Card WG.</td>
+            <td>Discovery-oriented capability/metadata document using the same well-known publication pattern as an ACPM tool/platform profile.</td>
+            <td>ACPM as superset/general case; Server Cards as the MCP-specific instance. Still forming; re-check before finalizing compatibility claims.</td>
+          </tr>
+          <tr>
+            <td>AgBOM (OWASP Agent Observability Standard project; builds on CycloneDX/SPDX/SWID)</td>
+            <td>Supply-chain inventory of what an agent or system is built from, for vulnerability and license tracking.</td>
+            <td>Declarative inventory overlap with subject/tools[]/models[].</td>
+            <td>Complementary, different center of gravity: AgBOM is provenance, ACPM is runtime offering. sc_refs[] may point at a companion AgBOM document.</td>
+          </tr>
+        </tbody>
+      </table>
+      <dl newline="false" spacing="normal">
+        <dt>Open Container Initiative image manifests</dt>
+        <dd>
+          An OCI image manifest declares what is actually present in an
+          image, not merely what was intended.  ACPM's capability support
+          levels (native, emulated, partial, none) apply the same
+          "declare what is actually there" discipline to agent capabilities.
+        </dd>
+        <dt>NIST capability maturity models</dt>
+        <dd>
+          ACPM's four-level support axis is a simplified maturity assessment
+          in the spirit of staged capability maturity frameworks, scoped to
+          a single binary-leaning feature rather than an organisational
+          process.
+        </dd>
+        <dt>Cloud provider service catalogs</dt>
+        <dd>
+          Service catalog listings (for example, marketplace entries for
+          managed cloud services) enumerate what a service exposes and its
+          operational limits.  ACPM's tools, models, and memory inventories
+          serve an analogous purpose for AI agent capabilities.
+        </dd>
+        <dt>Agent2Agent (A2A) Agent Cards</dt>
+        <dd>
+          An Agent Card is a deliberately minimal discovery document
+          advertising identity, capability tags, and an endpoint URL.  ACPM
+          extends this with an explicit trust, attestation, sandbox, cost,
+          and service-level model that an Agent Card does not specify, while
+          remaining compatible in spirit with the discovery use case.
+        </dd>
+        <dt>Model Context Protocol (MCP) capability negotiation</dt>
+        <dd>
+          MCP <xref target="MCP"/> servers and clients negotiate supported
+          capabilities at connection time via an initialize handshake.
+          ACPM's tools array is a static, publishable analogue of that
+          runtime negotiation, suitable for offline comparison before a
+          connection is ever established.
+        </dd>
+      </dl>
+    </section>
+
+    <!-- ============================================================ -->
+    <section anchor="security" numbered="true" toc="default">
+      <name>Security Considerations</name>
+      <t>
+        ACPM is a claims format, not a verification protocol.  Every field in
+        a profile <bcp14>MUST</bcp14> be treated by a Consumer as a
+        self-reported claim by the subject, or by whoever published the
+        profile on the subject's behalf, unless the Consumer independently
+        verifies it.  This specification does not provide, and does not
+        imply, a cryptographic guarantee of any claim's accuracy.
+      </t>
+      <t>
+        A profile <bcp14>MAY</bcp14> declare trust.level "enterprise" with no
+        supporting evidence.  A Consumer making a consequential trust
+        decision <bcp14>SHOULD</bcp14> require a verifiable attestation
+        (method "third_party" or "formal_audit") with a reachable
+        evidence_url and an unexpired attestation.expires_at before relying
+        on an "attested" or "enterprise" claim.
+      </t>
+      <t>
+        Capability support claims are asserted, not tested, by this
+        specification.  A Consumer performing capability matching for a
+        safety-relevant feature <bcp14>SHOULD</bcp14> independently probe the
+        subject before trusting a "native" support claim for that purpose.
+      </t>
+      <t>
+        Cost and service-level claims are point-in-time and unverified.
+        ACPM does not currently distinguish a contractually committed figure
+        from an observed historical one.  A Consumer making a procurement or
+        routing decision of consequence <bcp14>SHOULD</bcp14> corroborate
+        such claims against independent monitoring.
+      </t>
+      <t>
+        The provenance.signature field is advisory.  ACPM does not mandate a
+        signature scheme, key-distribution mechanism, or verification
+        behaviour.  A Consumer that requires provenance assurance
+        <bcp14>SHOULD</bcp14> treat a profile lacking a signature it can
+        independently verify as equivalent to trust.level "untrusted",
+        regardless of what trust.level the profile itself declares.
+      </t>
+      <t>
+        A delegation rule naming a Condition language a Consumer does not
+        implement <bcp14>MUST</bcp14> be treated as unsatisfiable-unknown,
+        with a conservative default applied (deny for outbound, reject for
+        inbound).  Silently treating an unsupported Condition as satisfied is
+        a conformance violation and could permit unintended delegation.
+      </t>
+      <t>
+        Nothing in ACPM cryptographically binds a profile document to the
+        real-world subject it claims to describe, beyond the advisory
+        subject.sc_refs cross-reference.  A Consumer <bcp14>SHOULD</bcp14>
+        only trust profiles obtained from a channel it already trusts (the
+        subject's own domain, or a registry it already trusts) rather than an
+        arbitrary, unauthenticated URL.
+      </t>
+    </section>
+
+    <!-- ============================================================ -->
+    <section anchor="iana" numbered="true" toc="default">
+      <name>IANA Considerations</name>
+      <t>
+        This document requests no IANA actions.  ACPM's capability
+        identifiers (the dot-namespaced strings used in the capabilities
+        array) currently form an open, convention-based vocabulary shared
+        informally with the Autonomous Agent Interchange Format's
+        required-capability vocabulary, with no registry operator.  A future
+        revision of this document or an accompanying document may propose a
+        community-operated or IANA-operated registry for capability
+        identifiers, analogous to the extension registries described for the
+        Autonomous Agent Interchange Format, should the vocabulary's growth
+        warrant centralised coordination.
+      </t>
+    </section>
+
+  </middle>
+
+  <back>
+    <references>
+      <name>References</name>
+
+      <references>
+        <name>Normative References</name>
+
+        <reference anchor="RFC2119"
+                   target="https://www.rfc-editor.org/rfc/rfc2119">
+          <front>
+            <title>Key words for use in RFCs to Indicate Requirement Levels</title>
+            <author initials="S." surname="Bradner" fullname="S. Bradner">
+              <organization/>
+            </author>
+            <date year="1997" month="March"/>
+          </front>
+          <seriesInfo name="BCP" value="14"/>
+          <seriesInfo name="RFC" value="2119"/>
+          <seriesInfo name="DOI" value="10.17487/RFC2119"/>
+        </reference>
+
+        <reference anchor="RFC8174"
+                   target="https://www.rfc-editor.org/rfc/rfc8174">
+          <front>
+            <title>Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</title>
+            <author initials="B." surname="Leiba" fullname="B. Leiba">
+              <organization/>
+            </author>
+            <date year="2017" month="May"/>
+          </front>
+          <seriesInfo name="BCP" value="14"/>
+          <seriesInfo name="RFC" value="8174"/>
+          <seriesInfo name="DOI" value="10.17487/RFC8174"/>
+        </reference>
+
+        <reference anchor="RFC4122"
+                   target="https://www.rfc-editor.org/rfc/rfc4122">
+          <front>
+            <title>A Universally Unique IDentifier (UUID) URN Namespace</title>
+            <author initials="P." surname="Leach" fullname="P. Leach">
+              <organization/>
+            </author>
+            <author initials="M." surname="Mealling" fullname="M. Mealling">
+              <organization/>
+            </author>
+            <author initials="R." surname="Salz" fullname="R. Salz">
+              <organization/>
+            </author>
+            <date year="2005" month="July"/>
+          </front>
+          <seriesInfo name="RFC" value="4122"/>
+          <seriesInfo name="DOI" value="10.17487/RFC4122"/>
+        </reference>
+
+        <reference anchor="JSON-SCHEMA"
+                   target="https://json-schema.org/draft/2020-12">
+          <front>
+            <title>JSON Schema: A Media Type for Describing JSON Documents</title>
+            <author initials="A." surname="Wright" fullname="A. Wright">
+              <organization/>
+            </author>
+            <author initials="H." surname="Andrews" fullname="H. Andrews">
+              <organization/>
+            </author>
+            <date year="2022"/>
+          </front>
+        </reference>
+
+      </references>
+
+      <references>
+        <name>Informative References</name>
+
+        <reference anchor="SC-006"
+                   target="https://schemacommons.org/SC-006/">
+          <front>
+            <title>Autonomous Agent Interchange Format (AAIF) — SPECIFICATION</title>
+            <author>
+              <organization>Schema Commons</organization>
+            </author>
+            <date year="2026"/>
+          </front>
+        </reference>
+
+        <reference anchor="MCP"
+                   target="https://modelcontextprotocol.io">
+          <front>
+            <title>Model Context Protocol</title>
+            <author>
+              <organization>Anthropic</organization>
+            </author>
+            <date year="2024"/>
+          </front>
+        </reference>
+
+        <reference anchor="A2A"
+                   target="https://a2aprotocol.ai">
+          <front>
+            <title>Agent2Agent Protocol</title>
+            <author>
+              <organization>Agent2Agent Protocol Contributors</organization>
+            </author>
+            <date year="2025"/>
+          </front>
+        </reference>
+
+        <reference anchor="HACP">
+          <front>
+            <title>HACP: A Capability-Contract Protocol for AI Agents and Edge Hardware</title>
+            <author initials="Y." surname="Sun" fullname="Y. Sun">
+              <organization/>
+            </author>
+            <date year="2026"/>
+          </front>
+          <seriesInfo name="Internet-Draft" value="draft-sunyi-hacp-protocol-00"/>
+          <format type="TXT" target="https://datatracker.ietf.org/doc/draft-sunyi-hacp-protocol/"/>
+        </reference>
+
+        <reference anchor="MCP-ROADMAP">
+          <front>
+            <title>Model Context Protocol Development Roadmap</title>
+            <author>
+              <organization>Model Context Protocol contributors</organization>
+            </author>
+            <date year="2026" month="March" day="5"/>
+          </front>
+          <format type="HTML" target="https://modelcontextprotocol.io/development/roadmap"/>
+        </reference>
+
+        <reference anchor="OWASP-AOS">
+          <front>
+            <title>Agent Observability Standard (AOS) — Agent Bill of Materials (AgBOM)</title>
+            <author>
+              <organization>OWASP</organization>
+            </author>
+            <date year="2026"/>
+          </front>
+          <format type="HTML" target="https://aos.owasp.org"/>
+        </reference>
+
+      </references>
+    </references>
+
+  </back>
+</rfc>

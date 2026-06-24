@@ -1,0 +1,40 @@
+cff-version: 1.2.0
+title: "ACPM — Agent Capability and Profile Model (Schema Commons SC-014)"
+message: "If you use ACPM, please cite it using these metadata."
+type: dataset
+abstract: >-
+  ACPM is an open, vendor-neutral standard for describing what an AI agent,
+  platform, tool, or model actually offers, independent of how it is run
+  (SC-006 AAIF) or discovered (SC-013 ARP). It standardises the declaration
+  of a capability profile — subject identity, dot-namespaced capability
+  support levels, tool/model/memory inventories, trust and attestation
+  posture, cost structure, SLA commitments, structured delegation rules,
+  and compliance posture — so registries, marketplaces, and orchestrators
+  can compare and match agents/platforms/tools/models without bespoke
+  per-vendor parsing. It is published as JSON Schema 2020-12 plus a
+  JSON-LD context.
+keywords:
+  - artificial intelligence
+  - LLM agents
+  - capability profile
+  - trust and attestation
+  - interoperability
+  - open standard
+  - JSON Schema
+  - service catalog
+authors:
+  - given-names: "Schema Commons"
+    name-particle: ""
+    family-names: "Contributors"
+license: CC-BY-4.0
+version: "1.0.0"
+date-released: "2026-06-16"
+repository-code: "https://github.com/Observalytics-SL/Frameworks"
+url: "https://github.com/Observalytics-SL/Frameworks/tree/main/SC-014-agent-capability-profile-model"
+identifiers:
+  - type: other
+    value: "SC-014"
+    description: "Schema Commons standard identifier."
+  - type: doi
+    value: "10.5281/zenodo.0000000"
+    description: "Placeholder Zenodo DOI — replace with the minted DOI on first archived release."

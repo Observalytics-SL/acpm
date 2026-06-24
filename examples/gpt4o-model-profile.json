@@ -1,0 +1,65 @@
+{
+  "x-sc-schema": "profile.schema.json",
+  "sc_standard": "SC-014",
+  "sc_version": "1.0.0",
+  "profile_id": "b2c3d4e5-0003-4000-8000-profile000003",
+  "subject": {
+    "subject_type": "model",
+    "name": "GPT-4o",
+    "vendor": "OpenAI",
+    "version": "2024.11.0",
+    "homepage": "https://platform.openai.com/docs/models/gpt-4o"
+  },
+  "capabilities": [
+    { "id": "vision.image_understanding", "support": "native" },
+    { "id": "audio.speech_to_text", "support": "none", "notes": "Use a dedicated audio model (e.g. Whisper) for transcription." },
+    { "id": "tool.function", "support": "native" },
+    { "id": "reasoning.extended_thinking", "support": "none" }
+  ],
+  "models": [
+    {
+      "provider": "openai",
+      "model_id": "gpt-4o",
+      "context_window": 128000,
+      "max_output_tokens": 16384,
+      "modalities": ["text", "image", "tool_use"]
+    }
+  ],
+  "trust": {
+    "level": "enterprise",
+    "attestation": {
+      "issuer": "OpenAI",
+      "method": "third_party",
+      "evidence_url": "https://openai.com/security",
+      "issued_at": "2026-01-15T00:00:00Z"
+    },
+    "sandbox": {
+      "isolation": "none",
+      "network_egress": "none"
+    }
+  },
+  "cost_profile": {
+    "pricing_model": "usage_based",
+    "currency": "USD",
+    "unit_cost": { "per": "token_1k", "amount": 0.0025 },
+    "free_tier": { "included_units": 0, "period": "month" }
+  },
+  "sla": {
+    "uptime_pct": 99.9,
+    "p50_latency_ms": 600,
+    "p99_latency_ms": 4000,
+    "support_tier": "enterprise",
+    "incident_response": { "severity1_minutes": 60 }
+  },
+  "compliance": {
+    "data_residency": ["US", "EU"],
+    "certifications": ["SOC2"],
+    "pii_handling": "encrypt"
+  },
+  "provenance": {
+    "authored_by": "Schema Commons Contributors",
+    "created_at": "2026-06-16T00:00:00Z",
+    "updated_at": "2026-06-16T00:00:00Z",
+    "license": "CC-BY-4.0"
+  }
+}

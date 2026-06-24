@@ -1,0 +1,509 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemacommons.org/SC-014/profile.schema.json",
+  "title": "ACPM Capability Profile",
+  "description": "Agent Capability and Profile Model v1 (SC-014) — a portable, vendor-neutral 'spec sheet' describing what an AI agent, platform, tool, or model actually offers: capability support level, trust/attestation, cost, SLA, and delegation rules. Lets registries, marketplaces, and orchestrators compare and match agents/platforms/tools/models without bespoke per-vendor parsing.",
+  "x-sc-standard": "SC-014",
+  "x-sc-version": "1.0.0",
+  "type": "object",
+  "required": ["sc_standard", "subject"],
+  "additionalProperties": false,
+  "patternProperties": {
+    "^x-": {
+      "description": "Reserved extension namespace (SPECIFICATION §H/§W-equivalent). Any property whose name begins with 'x-' carries vendor- or tool-specific metadata. Conforming consumers MUST ignore extension keys they do not understand and MUST NOT let them change capability, trust, or cost decisions. The validator hint 'x-sc-schema' (naming the target schema file) lives in this namespace."
+    }
+  },
+  "$defs": {
+    "condition": {
+      "title": "Condition",
+      "description": "A routing, gating, or filter condition. Two forms are accepted. The STRUCTURED object form is deterministic and portable — every conforming consumer evaluates it identically — and is the RECOMMENDED form. The bare STRING form is a natural-language hint only: it is non-deterministic, each consumer interprets it independently, and it MUST NOT be relied on for portable evaluation. Copied verbatim (semantics unchanged) from SC-006 AAIF SPECIFICATION §V.",
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Natural-language hint (non-deterministic). Provided for human readability and best-effort routing. Consumers SHOULD log a portability warning when routing on a string condition."
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["lang"],
+          "properties": {
+            "lang": {
+              "type": "string",
+              "enum": ["jsonpath", "jmespath", "cel", "jsonlogic", "always", "never"],
+              "description": "Expression language. 'jsonpath'/'jmespath': query evaluated for truthiness against the input/payload; 'cel': Common Expression Language boolean; 'jsonlogic': a JsonLogic rule object; 'always'/'never': constant true/false (no expr needed). Consumers MUST evaluate these deterministically."
+            },
+            "expr": {
+              "description": "The expression. A string for jsonpath/jmespath/cel, or an object for jsonlogic. Omitted for 'always'/'never'.",
+              "type": ["string", "object", "boolean"]
+            },
+            "nl": {
+              "type": "string",
+              "description": "Optional natural-language description of the condition for humans and logs. Advisory only — the structured 'expr' is authoritative."
+            }
+          },
+          "allOf": [
+            {
+              "if": { "properties": { "lang": { "enum": ["jsonpath", "jmespath", "cel", "jsonlogic"] } } },
+              "then": { "required": ["expr"] }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "properties": {
+    "_comment": {
+      "type": "string",
+      "description": "Non-normative human annotation. Ignored by conforming consumers; safe to strip. Use 'x-'-prefixed keys for machine-readable extensions."
+    },
+    "sc_standard": {
+      "const": "SC-014",
+      "description": "Schema Commons standard identifier — must be 'SC-014'."
+    },
+    "sc_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "default": "1.0.0",
+      "description": "ACPM schema version this document conforms to."
+    },
+    "profile_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Globally unique profile identifier (UUID). Assigned by the authoring party; SHOULD be preserved across re-publication."
+    },
+    "subject": {
+      "type": "object",
+      "description": "Identity of the thing this profile describes: an agent, platform, tool, or model.",
+      "required": ["subject_type", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "subject_type": {
+          "type": "string",
+          "enum": ["agent", "platform", "tool", "model"],
+          "description": "What kind of subject this profile describes."
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-readable name of the subject."
+        },
+        "vendor": {
+          "type": "string",
+          "description": "Organisation or individual that produces/operates the subject."
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "The subject's own version (independent of sc_version, the ACPM schema version)."
+        },
+        "homepage": {
+          "type": "string",
+          "format": "uri",
+          "description": "Canonical URL for the subject's documentation or product page."
+        },
+        "sc_refs": {
+          "type": "array",
+          "description": "Cross-references to other Schema Commons documents this profile describes or relates to (e.g. an SC-006 AAIF agent_id or an SC-013 ARP registry entry id).",
+          "items": {
+            "type": "object",
+            "required": ["standard", "id"],
+            "additionalProperties": false,
+            "properties": {
+              "standard": {
+                "type": "string",
+                "description": "Schema Commons standard code (e.g. 'SC-006', 'SC-013')."
+              },
+              "id": {
+                "type": "string",
+                "description": "Identifier within that standard's document (e.g. an AAIF agent_id UUID, or an ARP registry entry id)."
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "capabilities": {
+      "type": "array",
+      "description": "What the subject actually supports, and to what degree. Capability ids SHOULD use the same dot-namespaced vocabulary as SC-006 AAIF's required_capabilities[] (e.g. 'tool.mcp', 'memory.vector', 'orchestration.parallel') so AAIF agents and ARP registry entries can match against ACPM profiles without translation.",
+      "items": {
+        "type": "object",
+        "required": ["id", "support"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*$",
+            "description": "Dot-namespaced capability identifier (e.g. 'tool.mcp', 'memory.vector', 'orchestration.parallel', 'vision.image_understanding', 'audio.speech_to_text', 'reasoning.extended_thinking', 'auth.vault', 'state.checkpoint')."
+          },
+          "support": {
+            "type": "string",
+            "enum": ["native", "emulated", "partial", "none"],
+            "description": "'native': first-class, fully supported; 'emulated': achieved via a workaround or composition of other features; 'partial': supported with material limitations; 'none': not supported (informational — explicitly declaring absence is useful for comparison)."
+          },
+          "version_constraint": {
+            "type": "string",
+            "description": "Semver range over the subject's own version for which this capability claim holds (e.g. '>=2.0.0')."
+          },
+          "notes": {
+            "type": "string",
+            "description": "Free-form clarification (limitations, caveats, links to docs)."
+          }
+        }
+      }
+    },
+
+    "tools": {
+      "type": "array",
+      "description": "Tool-invocation protocols the subject supports and their operational limits.",
+      "items": {
+        "type": "object",
+        "required": ["protocol"],
+        "additionalProperties": false,
+        "properties": {
+          "protocol": {
+            "type": "string",
+            "enum": ["function", "mcp", "http", "openapi"],
+            "description": "Tool invocation protocol, aligned with SC-006 AAIF tools[].protocol."
+          },
+          "max_concurrent_calls": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Maximum number of concurrent tool calls the subject can issue or accept for this protocol."
+          },
+          "auth_methods": {
+            "type": "array",
+            "description": "Authentication methods supported for this tool protocol.",
+            "items": {
+              "type": "string",
+              "enum": ["bearer", "api_key", "oauth2", "aws_sigv4", "vault"]
+            },
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+
+    "models": {
+      "type": "array",
+      "description": "LLMs the subject exposes, routes to, or is itself an instance of (for subject_type='model').",
+      "items": {
+        "type": "object",
+        "required": ["provider", "model_id"],
+        "additionalProperties": false,
+        "properties": {
+          "provider": {
+            "type": "string",
+            "description": "LLM provider identifier (free-form string; see SC-006 AAIF model.provider for a recommended vocabulary, e.g. 'openai', 'anthropic', 'google')."
+          },
+          "model_id": {
+            "type": "string",
+            "description": "Model identifier in the provider's own notation (e.g. 'gpt-4o', 'claude-opus-4-5')."
+          },
+          "context_window": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Maximum input context window, in tokens."
+          },
+          "max_output_tokens": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Maximum output tokens per response."
+          },
+          "modalities": {
+            "type": "array",
+            "description": "Input/output modalities the model supports.",
+            "items": {
+              "type": "string",
+              "enum": ["text", "image", "audio", "video", "tool_use"]
+            },
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+
+    "memory": {
+      "type": "array",
+      "description": "Memory backends the subject supports, and the scopes available on each.",
+      "items": {
+        "type": "object",
+        "required": ["backend"],
+        "additionalProperties": false,
+        "properties": {
+          "backend": {
+            "type": "string",
+            "enum": ["in_memory", "redis", "postgres", "sqlite", "pinecone", "weaviate", "qdrant", "chroma", "custom"],
+            "description": "Storage backend, aligned with SC-006 AAIF memory[].backend."
+          },
+          "scopes": {
+            "type": "array",
+            "description": "Memory scopes available on this backend, aligned with SC-006 AAIF memory[].scope.",
+            "items": {
+              "type": "string",
+              "enum": ["user", "session", "task", "long_term"]
+            },
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+
+    "trust": {
+      "type": "object",
+      "description": "Trust posture of the subject: how strongly its claims can be relied upon, and what sandboxing applies when it executes.",
+      "additionalProperties": false,
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["untrusted", "sandboxed", "verified", "attested", "enterprise"],
+          "description": "Overall trust tier. 'untrusted': no claims verified; 'sandboxed': runs under isolation but unverified; 'verified': self- or third-party-checked against the profile's claims; 'attested': formally attested per the 'attestation' block; 'enterprise': attested plus organisational accountability (SLA, support tier, compliance)."
+        },
+        "attestation": {
+          "type": "object",
+          "description": "Evidence backing the trust level.",
+          "additionalProperties": false,
+          "properties": {
+            "issuer": {
+              "type": "string",
+              "description": "Entity that issued the attestation (e.g. the vendor itself, a named auditor, or a certification body)."
+            },
+            "method": {
+              "type": "string",
+              "enum": ["self", "third_party", "formal_audit"],
+              "description": "How the attestation was produced."
+            },
+            "evidence_url": {
+              "type": "string",
+              "format": "uri",
+              "description": "Link to the attestation report, audit, or supporting evidence."
+            },
+            "issued_at": {
+              "type": "string",
+              "format": "date-time",
+              "description": "When the attestation was issued (ISO 8601 UTC)."
+            },
+            "expires_at": {
+              "type": "string",
+              "format": "date-time",
+              "description": "When the attestation expires, if applicable (ISO 8601 UTC)."
+            }
+          }
+        },
+        "sandbox": {
+          "type": "object",
+          "description": "Isolation characteristics when the subject executes untrusted workloads.",
+          "additionalProperties": false,
+          "properties": {
+            "isolation": {
+              "type": "string",
+              "enum": ["none", "process", "container", "vm"],
+              "description": "Strongest isolation boundary the subject runs within."
+            },
+            "network_egress": {
+              "type": "string",
+              "enum": ["none", "allowlist", "full"],
+              "description": "Outbound network access policy under that isolation boundary."
+            }
+          }
+        }
+      }
+    },
+
+    "cost_profile": {
+      "type": "object",
+      "description": "How the subject is priced.",
+      "additionalProperties": false,
+      "properties": {
+        "pricing_model": {
+          "type": "string",
+          "enum": ["free", "usage_based", "subscription", "tiered", "custom"],
+          "description": "Overall pricing structure."
+        },
+        "currency": {
+          "type": "string",
+          "description": "ISO 4217 currency code (e.g. 'USD')."
+        },
+        "unit_cost": {
+          "type": "object",
+          "description": "Price per billable unit.",
+          "additionalProperties": false,
+          "properties": {
+            "per": {
+              "type": "string",
+              "enum": ["request", "token_1k", "minute", "run"],
+              "description": "Billing unit."
+            },
+            "amount": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Price per unit, in 'currency'."
+            }
+          }
+        },
+        "free_tier": {
+          "type": "object",
+          "description": "Free allotment before billing applies.",
+          "additionalProperties": false,
+          "properties": {
+            "included_units": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Number of billing units included free per period."
+            },
+            "period": {
+              "type": "string",
+              "enum": ["day", "month"],
+              "description": "Renewal period for the free allotment."
+            }
+          }
+        }
+      }
+    },
+
+    "sla": {
+      "type": "object",
+      "description": "Service-level commitments and observed/targeted performance.",
+      "additionalProperties": false,
+      "properties": {
+        "uptime_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Committed or observed uptime percentage."
+        },
+        "p50_latency_ms": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Median response latency, in milliseconds."
+        },
+        "p99_latency_ms": {
+          "type": "number",
+          "minimum": 0,
+          "description": "99th-percentile response latency, in milliseconds."
+        },
+        "support_tier": {
+          "type": "string",
+          "enum": ["community", "standard", "premium", "enterprise"],
+          "description": "Level of vendor support backing this subject."
+        },
+        "incident_response": {
+          "type": "object",
+          "description": "Incident response commitments.",
+          "additionalProperties": false,
+          "properties": {
+            "severity1_minutes": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Committed response time, in minutes, for a Severity-1 incident."
+            }
+          }
+        }
+      }
+    },
+
+    "delegation_rules": {
+      "type": "array",
+      "description": "Rules governing whether the subject may delegate work to, or accept delegated work from, other profiles/capabilities. At least one of 'target.profile_id', 'target.capability_id', or 'target.trust_level_min' SHOULD be present on each rule (non-normative guidance — not enforced structurally so that broad 'allow/deny by direction only' rules remain expressible).",
+      "items": {
+        "type": "object",
+        "required": ["direction", "action"],
+        "additionalProperties": false,
+        "properties": {
+          "direction": {
+            "type": "string",
+            "enum": ["outbound", "inbound"],
+            "description": "'outbound': this subject delegating to another; 'inbound': another subject delegating to this one."
+          },
+          "target": {
+            "type": "object",
+            "description": "What this rule applies to. All fields optional; SHOULD declare at least one.",
+            "additionalProperties": false,
+            "properties": {
+              "profile_id": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Restrict this rule to a specific target/source ACPM profile."
+              },
+              "capability_id": {
+                "type": "string",
+                "description": "Restrict this rule to delegation involving a specific capability id."
+              },
+              "trust_level_min": {
+                "type": "string",
+                "enum": ["untrusted", "sandboxed", "verified", "attested", "enterprise"],
+                "description": "Minimum trust level the counterparty must hold for this rule to apply."
+              }
+            }
+          },
+          "condition": {
+            "$ref": "#/$defs/condition",
+            "description": "Additional structured (or string-hint) condition gating this rule. Same Condition semantics as SC-006 AAIF SPECIFICATION §V."
+          },
+          "action": {
+            "type": "string",
+            "enum": ["allow", "deny", "require_approval"],
+            "description": "Effect when this rule matches."
+          }
+        }
+      }
+    },
+
+    "compliance": {
+      "type": "object",
+      "description": "Regulatory and data-handling posture.",
+      "additionalProperties": false,
+      "properties": {
+        "data_residency": {
+          "type": "array",
+          "description": "Regions in which the subject can guarantee data is stored/processed.",
+          "items": {
+            "type": "string",
+            "enum": ["EU", "US", "UK", "APAC", "custom"]
+          },
+          "uniqueItems": true
+        },
+        "certifications": {
+          "type": "array",
+          "description": "Free-form list of held certifications (e.g. 'SOC2', 'ISO27001', 'HIPAA').",
+          "items": { "type": "string" }
+        },
+        "pii_handling": {
+          "type": "string",
+          "enum": ["none", "redact", "encrypt", "forbidden"],
+          "description": "How the subject handles personally identifiable information."
+        }
+      }
+    },
+
+    "provenance": {
+      "type": "object",
+      "description": "Authorship and integrity metadata for this profile document.",
+      "additionalProperties": false,
+      "properties": {
+        "authored_by": {
+          "type": "string",
+          "description": "Author identifier (username, email, or DID)."
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 creation timestamp (UTC)."
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 last-modified timestamp (UTC)."
+        },
+        "license": {
+          "type": "string",
+          "description": "SPDX license identifier or URL for this profile document (e.g. 'CC-BY-4.0')."
+        },
+        "signature": {
+          "type": "string",
+          "description": "Optional base64-encoded cryptographic signature over the canonical JSON of this document. Advisory only — ACPM does not itself enforce or verify signatures; a consuming platform that chooses to verify it gains correspondingly more assurance. See SECURITY.md."
+        }
+      }
+    }
+  }
+}

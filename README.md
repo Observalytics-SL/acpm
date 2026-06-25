@@ -121,20 +121,6 @@ print("platform meets minimum trust:", ok)
 
 See [SPECIFICATION.md §I](SPECIFICATION.md) for the full normative definitions.
 
-## 📣 Ready-to-post LinkedIn announcement
-
-> Comparing AI agents, platforms, and models today means reading marketing pages and hoping the claims are true.
->
-> We just published **ACPM (SC-014)** — the Agent Capability and Profile Model. Think of it as "OCSF for AI agent capabilities": one canonical, machine-readable spec sheet for what an agent/platform/tool/model actually supports, how much you can trust it, what it costs, and what SLA backs it.
->
-> ACPM profiles plug straight into **[AAIF (SC-006)](https://github.com/Observalytics-SL/aaif)** agents and **AREG (SC-013)** registry entries via cross-references, so orchestrators can do capability matching and trust gating without bespoke per-vendor parsing.
->
-> It's brand new — zero adopters, zero implementations, fully open for first movers to help shape it.
->
-> Part of **Schema Commons** — the Creative Commons for data schemas.
->
-> #AIagents #OpenStandards #SchemaCommons #LLM #TrustAndSafety #MCP
-
 ## Companion standards
 
 | Standard | What it adds |

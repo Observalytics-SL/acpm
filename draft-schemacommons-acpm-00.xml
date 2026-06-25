@@ -69,9 +69,10 @@
         but distinct interoperability problems.  The first is how to express a
         portable, runnable agent definition so that an agent built on one
         runtime can be executed on another; this is the problem the
-        Autonomous Agent Interchange Format (AAIF) addresses.  The second is
+        Autonomous Agent Interchange Format (AAIF) <xref target="SC-006"/>
+        addresses.  The second is
         how to discover an agent within a registry or marketplace; this is the
-        problem an Agent Registry Protocol addresses.  Neither problem
+        problem the Agent Registry (AREG) addresses.  Neither problem
         encompasses a third, equally common need: describing, comparing, and
         reasoning about what an agent, the platform running it, the tools it
         calls, or the underlying model actually offers.
@@ -280,7 +281,7 @@ CapabilityProfile (root)
           structured cross-references, each an object with a "standard" field
           (a Schema Commons standard code such as "SC-006") and an "id" field
           (an identifier within that standard's own document, such as an AAIF
-          agent_id or an Agent Registry Protocol entry identifier).  These
+          agent_id or an Agent Registry (AREG) entry identifier).  These
           references are advisory pointers; ACPM does not require the
           referenced document to exist or be reachable.
         </t>
@@ -633,8 +634,9 @@ CapabilityProfile (root)
         </dd>
         <dt>Agent2Agent (A2A) Agent Cards</dt>
         <dd>
-          An Agent Card is a deliberately minimal discovery document
-          advertising identity, capability tags, and an endpoint URL.  ACPM
+          An Agent Card <xref target="A2A"/> is a deliberately minimal
+          discovery document advertising identity, capability tags, and an
+          endpoint URL.  ACPM
           extends this with an explicit trust, attestation, sandbox, cost,
           and service-level model that an Agent Card does not specify, while
           remaining compatible in spirit with the discovery use case.
@@ -761,25 +763,6 @@ CapabilityProfile (root)
           <seriesInfo name="DOI" value="10.17487/RFC8174"/>
         </reference>
 
-        <reference anchor="RFC4122"
-                   target="https://www.rfc-editor.org/rfc/rfc4122">
-          <front>
-            <title>A Universally Unique IDentifier (UUID) URN Namespace</title>
-            <author initials="P." surname="Leach" fullname="P. Leach">
-              <organization/>
-            </author>
-            <author initials="M." surname="Mealling" fullname="M. Mealling">
-              <organization/>
-            </author>
-            <author initials="R." surname="Salz" fullname="R. Salz">
-              <organization/>
-            </author>
-            <date year="2005" month="July"/>
-          </front>
-          <seriesInfo name="RFC" value="4122"/>
-          <seriesInfo name="DOI" value="10.17487/RFC4122"/>
-        </reference>
-
         <reference anchor="JSON-SCHEMA"
                    target="https://json-schema.org/draft/2020-12">
           <front>
@@ -800,7 +783,7 @@ CapabilityProfile (root)
         <name>Informative References</name>
 
         <reference anchor="SC-006"
-                   target="https://github.com/Observalytics-SL/SC-006/">
+                   target="https://github.com/Observalytics-SL/aaif/">
           <front>
             <title>Autonomous Agent Interchange Format (AAIF) — SPECIFICATION</title>
             <author>
@@ -835,7 +818,7 @@ CapabilityProfile (root)
         <reference anchor="HACP">
           <front>
             <title>HACP: A Capability-Contract Protocol for AI Agents and Edge Hardware</title>
-            <author initials="Y." surname="Sun" fullname="Y. Sun">
+            <author initials="Y." surname="Sun" fullname="Yi Sun">
               <organization/>
             </author>
             <date year="2026"/>

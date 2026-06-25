@@ -1,6 +1,6 @@
 # SC-014 · ACPM — Agent Capability and Profile Model
 
-[![Schema Commons Standard](assets/schema-commons-badge.svg)](https://github.com/Observalytics-SL) ![Status Proposed](https://img.shields.io/badge/status-proposed-orange) [![Cite](https://img.shields.io/badge/cite-CITATION.cff-blue)](CITATION.cff)
+[![Schema Commons Standard](assets/schema-commons-badge.svg)](https://github.com/Observalytics-SL) ![Status Proposed](https://img.shields.io/badge/status-proposed-orange) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20845320.svg)](https://doi.org/10.5281/zenodo.20845320) [![Cite](https://img.shields.io/badge/cite-CITATION.cff-blue)](CITATION.cff)
 
 > **One spec sheet for what an agent, platform, tool, or model actually offers.** [SC-006 AAIF](https://github.com/Observalytics-SL/aaif) defines how to *run* a portable agent. [SC-013 AREG](https://github.com/Observalytics-SL/areg) defines how to *discover* one in a registry. Neither tells you what it's actually capable of, how much you can trust it, what it costs, or what SLA it carries. ACPM is that spec sheet — "OCSF is to security events what ACPM is to AI agent capabilities."
 

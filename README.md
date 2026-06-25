@@ -2,7 +2,7 @@
 
 [![Schema Commons Standard](assets/schema-commons-badge.svg)](https://github.com/Observalytics-SL) ![Status Proposed](https://img.shields.io/badge/status-proposed-orange) [![Cite](https://img.shields.io/badge/cite-CITATION.cff-blue)](CITATION.cff)
 
-> **One spec sheet for what an agent, platform, tool, or model actually offers.** [SC-006 AAIF](https://github.com/Observalytics-SL/aaif) defines how to *run* a portable agent. SC-013 AREG *(forthcoming)* defines how to *discover* one in a registry. Neither tells you what it's actually capable of, how much you can trust it, what it costs, or what SLA it carries. ACPM is that spec sheet — "OCSF is to security events what ACPM is to AI agent capabilities."
+> **One spec sheet for what an agent, platform, tool, or model actually offers.** [SC-006 AAIF](https://github.com/Observalytics-SL/aaif) defines how to *run* a portable agent. [SC-013 AREG](https://github.com/Observalytics-SL/areg) defines how to *discover* one in a registry. Neither tells you what it's actually capable of, how much you can trust it, what it costs, or what SLA it carries. ACPM is that spec sheet — "OCSF is to security events what ACPM is to AI agent capabilities."
 
 ## The problem
 
@@ -140,6 +140,6 @@ See [SPECIFICATION.md §I](SPECIFICATION.md) for the full normative definitions.
 | Standard | What it adds |
 |----------|-------------|
 | [AAIF — SC-006](https://github.com/Observalytics-SL/aaif) | Agent definition: how to *describe and run* a portable agent |
-| AREG — SC-013 *(forthcoming)* | Agent registry: how to *publish and discover* agents |
+| [AREG — SC-013](https://github.com/Observalytics-SL/areg) | Agent registry: how to *publish and discover* agents |
 
 *Licensed CC BY 4.0 — part of [Schema Commons](https://github.com/Observalytics-SL).*

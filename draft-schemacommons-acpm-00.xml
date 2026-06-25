@@ -22,7 +22,7 @@
       </address>
     </author>
 
-    <date year="2026" month="June"/>
+    <date year="2026" month="June" day="25"/>
     <area>ART</area>
 
     <keyword>AI agents</keyword>
@@ -255,8 +255,8 @@ CapabilityProfile (root)
   models[]          provider / model_id / context_window / modalities[]
   memory[]          backend / scopes[]
   trust
-    level           untrusted | sandboxed | verified | attested | enterprise
-    attestation      issuer / method / evidence_url / issued_at / expires_at
+    level       untrusted | sandboxed | verified | attested | enterprise
+    attestation  issuer / method / evidence_url / issued_at / expires_at
     sandbox          isolation / network_egress
   cost_profile
     pricing_model    free | usage_based | subscription | tiered | custom
@@ -805,11 +805,11 @@ CapabilityProfile (root)
         </reference>
 
         <reference anchor="A2A"
-                   target="https://a2aprotocol.ai">
+                   target="https://github.com/a2aproject/A2A">
           <front>
             <title>Agent2Agent Protocol</title>
             <author>
-              <organization>Agent2Agent Protocol Contributors</organization>
+              <organization>Linux Foundation (Agent2Agent Project)</organization>
             </author>
             <date year="2025"/>
           </front>

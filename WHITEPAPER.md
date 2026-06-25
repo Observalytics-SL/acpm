@@ -381,7 +381,7 @@ ACPM v1.0.0 is a Proposed Standard in Schema Commons, licensed CC BY 4.0. The sc
 
 [11] National Institute of Standards and Technology, "Artificial Intelligence Risk Management Framework (AI RMF 1.0)," NIST AI 100-1, U.S. Department of Commerce, January 2023. https://doi.org/10.6028/NIST.AI.100-1
 
-[12] van Bussel, B., "Agent Registry Protocol (ARP)," Schema Commons SC-013, Observalytics SL, June 2026. https://github.com/Observalytics-SL/SC-013/
+[12] van Bussel, B., "Agent Registry Protocol (ARP)," Schema Commons SC-013, Observalytics SL, 2026. (forthcoming)
 
 [13] Splunk, AWS, et al., "Open Cybersecurity Schema Framework (OCSF)," 2022. https://schema.ocsf.io
 

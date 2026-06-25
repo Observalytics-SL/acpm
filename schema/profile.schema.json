@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/Observalytics-SL/acpm/main/schema/profile.schema.json",
+  "$id": "https://schemacommons.org/SC-014/profile.schema.json",
   "title": "ACPM Capability Profile",
   "description": "Agent Capability and Profile Model v1 (SC-014) — a portable, vendor-neutral 'spec sheet' describing what an AI agent, platform, tool, or model actually offers: capability support level, trust/attestation, cost, SLA, and delegation rules. Lets registries, marketplaces, and orchestrators compare and match agents/platforms/tools/models without bespoke per-vendor parsing.",
   "x-sc-standard": "SC-014",

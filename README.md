@@ -2,7 +2,7 @@
 
 [![Schema Commons Standard](assets/schema-commons-badge.svg)](https://github.com/Observalytics-SL) ![Status Proposed](https://img.shields.io/badge/status-proposed-orange) [![Cite](https://img.shields.io/badge/cite-CITATION.cff-blue)](CITATION.cff)
 
-> **One spec sheet for what an agent, platform, tool, or model actually offers.** SC-006 (AAIF) defines how to *run* a portable agent. SC-013 (ARP) defines how to *discover* one in a registry. Neither tells you what it's actually capable of, how much you can trust it, what it costs, or what SLA it carries. ACPM is that spec sheet — "OCSF is to security events what ACPM is to AI agent capabilities."
+> **One spec sheet for what an agent, platform, tool, or model actually offers.** [SC-006 AAIF](https://github.com/Observalytics-SL/aaif) defines how to *run* a portable agent. SC-013 AREG *(forthcoming)* defines how to *discover* one in a registry. Neither tells you what it's actually capable of, how much you can trust it, what it costs, or what SLA it carries. ACPM is that spec sheet — "OCSF is to security events what ACPM is to AI agent capabilities."
 
 ## The problem
 
@@ -34,13 +34,13 @@ A single, vendor-neutral capability profile that any agent, platform, tool, or m
 }
 ```
 
-Capability ids use the same dot-namespaced vocabulary as SC-006 AAIF's `required_capabilities[]` (`tool.mcp`, `memory.vector`, `orchestration.parallel`, ...), so an AAIF agent's requirements and an ACPM profile's offerings can be matched directly. ACPM profiles are referenced from SC-013 ARP registry entries and SC-006 AAIF agents via `sc_refs[]`.
+Capability ids use the same dot-namespaced vocabulary as [SC-006 AAIF](https://github.com/Observalytics-SL/aaif)'s `required_capabilities[]` (`tool.mcp`, `memory.vector`, `orchestration.parallel`, ...), so an AAIF agent's requirements and an ACPM profile's offerings can be matched directly. ACPM profiles are referenced from SC-013 AREG registry entries and SC-006 AAIF agents via `sc_refs[]`.
 
 ## Status & honest expectations
 
 ACPM is a **brand-new, proposed standard with zero implementations and zero adopters**. It has not been used in production anywhere. The schema and examples validate cleanly today, but nothing yet generates, consumes, or enforces an ACPM profile in a real system. If you adopt it early, you are shaping the spec, not following an established one — say so, and we'll credit you as a founding adopter in [ADOPTERS.md](ADOPTERS.md).
 
-ACPM does not replace SC-006 (AAIF) or SC-013 (ARP); it sits alongside them as the capability/trust/cost layer that both can reference.
+ACPM does not replace SC-006 (AAIF) or SC-013 AREG; it sits alongside them as the capability/trust/cost layer that both can reference.
 
 ## An open standard, not just a schema
 
@@ -49,15 +49,11 @@ ACPM does not replace SC-006 (AAIF) or SC-013 (ARP); it sits alongside them as t
 - **Report issues safely.** [SECURITY.md](SECURITY.md) defines the threat model (mostly: nothing here is cryptographically enforced) and disclosure process.
 - **Extend without forking.** The `^x-` namespace and `_comment` root key (mirrored from SC-006) let tools attach metadata without breaking strict validation.
 
-```bash
-python ../tools/validate.py SC-014-agent-capability-profile-model
-```
-
 ## Who benefits
 
 | Role | Benefit |
 |------|---------|
-| **Registries & marketplaces** (e.g. SC-013 ARP) | List agents/platforms/tools/models with comparable, structured capability and cost data instead of free-text claims |
+| **Registries & marketplaces** (e.g. SC-013 AREG) | List agents/platforms/tools/models with comparable, structured capability and cost data instead of free-text claims |
 | **Orchestrators** | Match an AAIF agent's `required_capabilities[]` against ACPM profiles before dispatch; gate by `trust.level` |
 | **Procurement / FinOps** | Compare `cost_profile` and `sla` across vendors on a like-for-like basis |
 | **Security & compliance teams** | Check `trust.attestation`, `compliance.data_residency`, and `compliance.pii_handling` before approving a subject for use |
@@ -85,7 +81,7 @@ python ../tools/validate.py SC-014-agent-capability-profile-model
 ## Validate
 
 ```bash
-python ../tools/validate.py SC-014-agent-capability-profile-model
+python tools/validate.py
 ```
 
 ## Quick start: comparing two profiles
@@ -131,7 +127,7 @@ See [SPECIFICATION.md §I](SPECIFICATION.md) for the full normative definitions.
 >
 > We just published **ACPM (SC-014)** — the Agent Capability and Profile Model. Think of it as "OCSF for AI agent capabilities": one canonical, machine-readable spec sheet for what an agent/platform/tool/model actually supports, how much you can trust it, what it costs, and what SLA backs it.
 >
-> ACPM profiles plug straight into **AAIF (SC-006)** agents and **ARP (SC-013)** registry entries via cross-references, so orchestrators can do capability matching and trust gating without bespoke per-vendor parsing.
+> ACPM profiles plug straight into **[AAIF (SC-006)](https://github.com/Observalytics-SL/aaif)** agents and **AREG (SC-013)** registry entries via cross-references, so orchestrators can do capability matching and trust gating without bespoke per-vendor parsing.
 >
 > It's brand new — zero adopters, zero implementations, fully open for first movers to help shape it.
 >
@@ -139,4 +135,11 @@ See [SPECIFICATION.md §I](SPECIFICATION.md) for the full normative definitions.
 >
 > #AIagents #OpenStandards #SchemaCommons #LLM #TrustAndSafety #MCP
 
-*Licensed CC BY 4.0 — part of [Schema Commons](../README.md).*
+## Companion standards
+
+| Standard | What it adds |
+|----------|-------------|
+| [AAIF — SC-006](https://github.com/Observalytics-SL/aaif) | Agent definition: how to *describe and run* a portable agent |
+| AREG — SC-013 *(forthcoming)* | Agent registry: how to *publish and discover* agents |
+
+*Licensed CC BY 4.0 — part of [Schema Commons](https://github.com/Observalytics-SL).*

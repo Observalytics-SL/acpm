@@ -367,7 +367,7 @@ ACPM v1.0.0 is a Proposed Standard in Schema Commons, licensed CC BY 4.0. The sc
 
 [4] Wright, A., Andrews, H., Hutton, B., and G. Dennis, "JSON Schema: A Media Type for Describing JSON Documents," Internet-Draft draft-bhutton-json-schema-01, IETF, December 2020. https://json-schema.org/draft/2020-12
 
-[5] van Bussel, B., "Autonomous Agent Interchange Format (AAIF)," Schema Commons SC-006, Observalytics SL, June 2026. https://schemacommons.org/SC-006/
+[5] van Bussel, B., "Autonomous Agent Interchange Format (AAIF)," Schema Commons SC-006, Observalytics SL, June 2026. https://github.com/Observalytics-SL/SC-006/
 
 [6] Google LLC, "Agent2Agent (A2A) Protocol," 2025. https://a2aprotocol.ai
 
@@ -381,10 +381,10 @@ ACPM v1.0.0 is a Proposed Standard in Schema Commons, licensed CC BY 4.0. The sc
 
 [11] National Institute of Standards and Technology, "Artificial Intelligence Risk Management Framework (AI RMF 1.0)," NIST AI 100-1, U.S. Department of Commerce, January 2023. https://doi.org/10.6028/NIST.AI.100-1
 
-[12] van Bussel, B., "Agent Registry Protocol (ARP)," Schema Commons SC-013, Observalytics SL, June 2026. https://schemacommons.org/SC-013/
+[12] van Bussel, B., "Agent Registry Protocol (ARP)," Schema Commons SC-013, Observalytics SL, June 2026. https://github.com/Observalytics-SL/SC-013/
 
 [13] Splunk, AWS, et al., "Open Cybersecurity Schema Framework (OCSF)," 2022. https://schema.ocsf.io
 
 ---
 
-*Licensed CC BY 4.0. Part of [Schema Commons](https://schemacommons.org). To cite this paper, see `CITATION.cff` in the repository.*
+*Licensed CC BY 4.0. Part of [Schema Commons](https://github.com/Observalytics-SL). To cite this paper, see `CITATION.cff` in the repository.*

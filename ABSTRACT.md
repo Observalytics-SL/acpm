@@ -5,7 +5,7 @@
 **License:** CC BY 4.0 · **Date:** June 2026
 **Repository:** https://github.com/Observalytics-SL/acpm
 **Schema:** https://raw.githubusercontent.com/Observalytics-SL/acpm/main/schema/profile.schema.json
-**Namespace:** https://schemacommons.org/SC-014/vocab#
+**Namespace:** https://github.com/Observalytics-SL/acpm/vocab#
 
 ---
 
@@ -82,4 +82,4 @@ AI agents · capability profile · trust and attestation · cost comparison · S
 
 - **Issues and proposals:** https://github.com/Observalytics-SL/Frameworks/issues
 - **Working group:** See CONTRIBUTING.md in the repository
-- **General enquiries:** hello@schemacommons.org *(forthcoming)*
+- **General enquiries:** hello@observalytics.com *(forthcoming)*

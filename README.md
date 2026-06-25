@@ -1,6 +1,6 @@
 # SC-014 · ACPM — Agent Capability and Profile Model
 
-[![Schema Commons Standard](assets/schema-commons-badge.svg)](https://schemacommons.org) ![Status Proposed](https://img.shields.io/badge/status-proposed-orange) [![Cite](https://img.shields.io/badge/cite-CITATION.cff-blue)](CITATION.cff)
+[![Schema Commons Standard](assets/schema-commons-badge.svg)](https://github.com/Observalytics-SL) ![Status Proposed](https://img.shields.io/badge/status-proposed-orange) [![Cite](https://img.shields.io/badge/cite-CITATION.cff-blue)](CITATION.cff)
 
 > **One spec sheet for what an agent, platform, tool, or model actually offers.** SC-006 (AAIF) defines how to *run* a portable agent. SC-013 (ARP) defines how to *discover* one in a registry. Neither tells you what it's actually capable of, how much you can trust it, what it costs, or what SLA it carries. ACPM is that spec sheet — "OCSF is to security events what ACPM is to AI agent capabilities."
 

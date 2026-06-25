@@ -800,7 +800,7 @@ CapabilityProfile (root)
         <name>Informative References</name>
 
         <reference anchor="SC-006"
-                   target="https://schemacommons.org/SC-006/">
+                   target="https://github.com/Observalytics-SL/SC-006/">
           <front>
             <title>Autonomous Agent Interchange Format (AAIF) — SPECIFICATION</title>
             <author>

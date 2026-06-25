@@ -53,10 +53,10 @@ This matters because of how IETF submission actually works: the instant a draft 
 
 | Purpose | URI |
 |---------|-----|
-| Standard landing page | `https://schemacommons.org/SC-014` |
-| Profile schema `$id` | `https://schemacommons.org/SC-014/profile.schema.json` |
-| Versioned schema | `https://schemacommons.org/SC-014/1.0.0/profile.schema.json` |
-| JSON-LD context | `https://schemacommons.org/SC-014/context.jsonld` |
+| Standard landing page | `https://github.com/Observalytics-SL/acpm` |
+| Profile schema `$id` | `https://github.com/Observalytics-SL/acpm/profile.schema.json` |
+| Versioned schema | `https://github.com/Observalytics-SL/acpm/1.0.0/profile.schema.json` |
+| JSON-LD context | `https://raw.githubusercontent.com/Observalytics-SL/acpm/main/context.jsonld` |
 | Conformance report well-known *(planned)* | `/.well-known/acpm-conformance.json` |
 
 When the domain is live, schema `$id`s SHOULD resolve to the schema file and SHOULD be content-addressable per version. Until then the `$id`s are stable identifiers, not necessarily dereferenceable URLs.

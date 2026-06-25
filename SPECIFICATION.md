@@ -346,8 +346,8 @@ Pick the closest dot-namespace prefix (`tool.*`, `memory.*`, `orchestration.*`, 
 
 ### Informative references
 
-- **[SC-006]** Schema Commons, "Autonomous Agent Interchange Format — SPECIFICATION.md", https://schemacommons.org/SC-006/.
-- **[SC-013]** Schema Commons, "Agent Registry Protocol — README.md", https://schemacommons.org/SC-013/.
+- **[SC-006]** Schema Commons, "Autonomous Agent Interchange Format — SPECIFICATION.md", https://github.com/Observalytics-SL/SC-006/.
+- **[SC-013]** Schema Commons, "Agent Registry Protocol — README.md", https://github.com/Observalytics-SL/SC-013/.
 - **[MCP]** Anthropic, "Model Context Protocol", 2024, https://modelcontextprotocol.io.
 - **[A2A]** "Agent2Agent Protocol", https://a2aprotocol.ai (or successor specification location).
 - **[SPDX]** Linux Foundation, "SPDX License List", https://spdx.org/licenses/.

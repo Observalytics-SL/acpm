@@ -5,7 +5,7 @@ ACPM is a data-format standard for describing capability, trust, cost, and SLA c
 ## Reporting a vulnerability
 
 - **Specification weaknesses** (a construct that invites a false sense of assurance, an under-specified MUST, a missing guardrail): open a public issue titled `[security] SC-014: <summary>` so it can be discussed and corrected in the open.
-- **Future reference tooling**, once it exists: report privately to **security@schemacommons.org**. (As of this writing there is no ACPM-specific tooling beyond the shared schema validator, so this path is forward-looking.)
+- **Future reference tooling**, once it exists: report privately to **security@observalytics.com**. (As of this writing there is no ACPM-specific tooling beyond the shared schema validator, so this path is forward-looking.)
 
 Please include: affected field/section or version, a minimal reproducing ACPM document or scenario, and the impact you observed.
 

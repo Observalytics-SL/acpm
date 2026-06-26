@@ -2,7 +2,7 @@
 
 [![Schema Commons Standard](assets/schema-commons-badge.svg)](https://github.com/Observalytics-SL) ![Status Proposed](https://img.shields.io/badge/status-proposed-orange) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20845320.svg)](https://doi.org/10.5281/zenodo.20845320) [![Cite](https://img.shields.io/badge/cite-CITATION.cff-blue)](CITATION.cff)
 
-> **One spec sheet for what an agent, platform, tool, or model actually offers.** [SC-006 AAIF](https://github.com/Observalytics-SL/aaif) defines how to *run* a portable agent. [SC-013 AREG](https://github.com/Observalytics-SL/areg) defines how to *discover* one in a registry. Neither tells you what it's actually capable of, how much you can trust it, what it costs, or what SLA it carries. ACPM is that spec sheet — "OCSF is to security events what ACPM is to AI agent capabilities."
+> **A structured capability profile for AI agents, platforms, tools, and models.** [SC-006 AAIF](https://github.com/Observalytics-SL/aaif) defines how to *run* a portable agent. [SC-013 AREG](https://github.com/Observalytics-SL/areg) defines how to *discover* one in a registry. ACPM defines what it *offers* — a machine-readable document declaring capabilities, trust posture, cost structure, SLA, and delegation rules in a form registries and orchestrators can compare directly.
 
 ## The problem
 
@@ -42,14 +42,14 @@ ACPM is a **brand-new, proposed standard with zero implementations and zero adop
 
 ACPM does not replace SC-006 (AAIF) or SC-013 AREG; it sits alongside them as the capability/trust/cost layer that both can reference.
 
-## An open standard, not just a schema
+## Citation, conformance, and extensibility
 
 - **Cite it.** [`CITATION.cff`](CITATION.cff) + a placeholder Zenodo DOI; see [PUBLISHING.md](PUBLISHING.md) for the arXiv / IETF Internet-Draft / W3C Community Group paths.
 - **Self-certify conformance.** Pick a level from the table below and check your profile against it; see [CONFORMANCE.md](CONFORMANCE.md). The self-certification report format is **planned, not yet shipped** — see CONFORMANCE.md for what exists today versus what's still on paper.
 - **Report issues safely.** [SECURITY.md](SECURITY.md) defines the threat model (mostly: nothing here is cryptographically enforced) and disclosure process.
 - **Extend without forking.** The `^x-` namespace and `_comment` root key (mirrored from SC-006) let tools attach metadata without breaking strict validation.
 
-## Who benefits
+## Use cases
 
 | Role | Benefit |
 |------|---------|

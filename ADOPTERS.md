@@ -50,14 +50,3 @@ If you have built a tool that reads or writes ACPM documents (validator, capabil
 | `schema-commons/validate.py` | Python | 1.0.0 | Reference schema validator (shared across all Schema Commons standards) | [tools/validate.py](../tools/validate.py) |
 | *(your tool here)* | | | | |
 
----
-
-## Wanted: first adopters
-
-We are actively seeking the **first three independent adopters** of ACPM — whether you're publishing a profile for your own agent/platform/tool/model, or building a registry/orchestrator that consumes profiles for capability matching or trust gating. If interested, please open an issue titled `[Adoption] <Project name>`. We will:
-
-- Help map your existing capability/trust/cost documentation to ACPM fields
-- Co-author the conformance report schema with you if you need it before it ships generally (see [CONFORMANCE.md](CONFORMANCE.md))
-- Credit your project as a founding adopter
-
-Especially interested in: registries and marketplaces that already list agents/platforms/tools (a natural place for ACPM profiles to plug in), and any SC-006 AAIF or SC-013 ARP adopter looking to add comparable capability/trust/cost data to their existing listings.

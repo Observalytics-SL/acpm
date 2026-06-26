@@ -63,4 +63,4 @@ When the domain is live, schema `$id`s SHOULD resolve to the schema file and SHO
 
 ## Status
 
-ACPM is a **Proposed** standard. It has no external adopters and no reference tooling beyond schema validation. The fastest credibility wins, in order: (1) mint a DOI, (2) ship the conformance report schema so level claims become machine-checkable, (3) land one independent adopter publishing a real profile, (4) post the arXiv write-up.
+ACPM v1.0.0 is a **proposed** standard. DOI minted (10.5281/zenodo.20845320). IETF Internet-Draft (`draft-schemacommons-acpm-00`) is submission-ready — see above for the Datatracker link. No external adopters yet; see [ADOPTERS.md](ADOPTERS.md). arXiv submission and conformance report schema remain pending.
